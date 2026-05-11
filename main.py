@@ -7,20 +7,25 @@ def load_tasks():
     if not os.path.exists(FILE_NAME):
         return []
     with open(FILE_NAME, "r") as file:
-        return json.load(file)
+        tasks = json.load(file)
+        for task in tasks:
+            if "priority" not in task:
+                task["priority"] = "medium"
+        return tasks
 
 def save_tasks(tasks):
     with open(FILE_NAME, "w") as file:
         json.dump(tasks, file, indent=4)
 
-def add_task(tasks, description):
+def add_task(tasks, description, priority):
     task = {
         "description": description,
-        "completed": False
+        "completed": False,
+        "priority": priority
     }
     tasks.append(task)
     save_tasks(tasks)
-    print("Task added successfully")
+    print("Task saved successfully")
 
 def list_tasks(tasks):
     if len(tasks) == 0:
@@ -29,7 +34,7 @@ def list_tasks(tasks):
 
     for i, task in enumerate(tasks):
         status = "Done" if task["completed"] else "Not Done"
-        print(f"{i+1}. {task['description']} [{status}]")
+        print(f"{i+1}. {task['description']} [{status}] - Priority: {task['priority']}")
 
 def complete_task(tasks, index):
     if index < 0 or index >= len(tasks):
@@ -47,15 +52,21 @@ def delete_task(tasks, index):
     save_tasks(tasks)
     print("Task deleted")
 
+def count_tasks(tasks):
+    print(f"Total tasks: {len(tasks)}")
+
 def main():
     tasks = load_tasks()
 
     while True:
-        command = input("\nEnter command (add/list/complete/delete/exit): ").strip().lower()
+        command = input("\nEnter command (add/list/complete/delete/count/exit): ").strip().lower()
 
         if command == "add":
             desc = input("Enter task description: ")
-            add_task(tasks, desc)
+            priority = input("Enter priority (low/medium/high) [default: medium]: ").strip().lower()
+            if priority not in ["low", "medium", "high"]:
+                priority = "medium"
+            add_task(tasks, desc, priority)
 
         elif command == "list":
             list_tasks(tasks)
@@ -67,6 +78,9 @@ def main():
         elif command == "delete":
             num = int(input("Enter task number: ")) - 1
             delete_task(tasks, num)
+
+        elif command == "count":
+            count_tasks(tasks)
 
         elif command == "exit":
             print("Goodbye")

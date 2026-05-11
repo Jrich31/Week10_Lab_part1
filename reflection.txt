@@ -1,0 +1,3 @@
+The purpose of this applicaton is to be able to add, view, complete, and delete different tasks or pieces of data
+The commands are add, list, complete, delete, and exit.
+It stores its data in the Week10_Lab_part1/main.py bin
